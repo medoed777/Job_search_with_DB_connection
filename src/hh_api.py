@@ -1,0 +1,42 @@
+import requests
+
+
+class EmployerAPI:
+    """Класс для работы с API работодателей на hh.ru."""
+
+    BASE_URL = "https://api.hh.ru/employers/"
+
+    def fetch_employer(self, employer_id: str) -> dict:
+        try:
+            resp = requests.get(f"{self.BASE_URL}{employer_id}")
+            resp.raise_for_status()
+            data = resp.json()
+            return {
+                "id": data["id"],
+                "name": data["name"],
+                "url": data.get("url"),
+                "description": data.get("description", "")
+            }
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            raise
+
+    def fetch_vacancies(self, employer_id: str) -> list:
+        try:
+            resp = requests.get(f"https://api.hh.ru/vacancies?employer_id={employer_id}")
+            resp.raise_for_status()
+            data = resp.json()
+            return [
+                {
+                    "id": vacancy["id"],
+                    "title": vacancy["name"],
+                    "salary_min": vacancy["salary"]["from"] if vacancy["salary"] else None,
+                    "salary_max": vacancy["salary"]["to"] if vacancy["salary"] else None,
+                    "currency": vacancy["salary"]["currency"] if vacancy["salary"] else None,
+                    "published_at": vacancy["published_at"]
+                } for vacancy in data["items"]
+            ]
+        except requests.exceptions.HTTPError as http_err:
+            print(f"HTTP error occurred: {http_err}")
+            raise
+        
