@@ -7,6 +7,7 @@ class EmployerAPI:
     BASE_URL = "https://api.hh.ru/employers/"
 
     def fetch_employer(self, employer_id: str) -> dict:
+        """Получает информацию о компании по ID"""
         try:
             resp = requests.get(f"{self.BASE_URL}{employer_id}")
             resp.raise_for_status()
@@ -22,6 +23,7 @@ class EmployerAPI:
             raise
 
     def fetch_vacancies(self, employer_id: str) -> list:
+        """Получает информацию о вакансиях компании"""
         try:
             resp = requests.get(f"https://api.hh.ru/vacancies?employer_id={employer_id}")
             resp.raise_for_status()
@@ -33,10 +35,8 @@ class EmployerAPI:
                     "salary_min": vacancy["salary"]["from"] if vacancy["salary"] else None,
                     "salary_max": vacancy["salary"]["to"] if vacancy["salary"] else None,
                     "currency": vacancy["salary"]["currency"] if vacancy["salary"] else None,
-                    "published_at": vacancy["published_at"]
                 } for vacancy in data["items"]
             ]
         except requests.exceptions.HTTPError as http_err:
             print(f"HTTP error occurred: {http_err}")
             raise
-        
