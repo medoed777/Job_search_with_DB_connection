@@ -1,8 +1,8 @@
-import psycopg2
-from psycopg2 import sql
 import os
-from dotenv import load_dotenv
 
+import psycopg2
+from dotenv import load_dotenv
+from psycopg2 import sql
 
 load_dotenv()
 
@@ -18,7 +18,9 @@ def create_database() -> None:
     cursor = connection.cursor()
 
     try:
-        cursor.execute(sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name)))
+        cursor.execute(
+            sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name))
+        )
         print(f"База данных '{db_name}' успешно создана.")
     except Exception as e:
         print(f"Ошибка при создании базы данных: {e}")
