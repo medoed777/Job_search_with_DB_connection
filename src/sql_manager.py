@@ -3,6 +3,7 @@ from psycopg2 import sql
 import os
 from dotenv import load_dotenv
 
+
 load_dotenv()
 
 
@@ -40,7 +41,7 @@ def create_tables() -> None:
         id SERIAL PRIMARY KEY,
         employer_id VARCHAR(255) UNIQUE NOT NULL,
         name VARCHAR(255) NOT NULL,
-        url VARCHAR(255),
+        url VARCHAR(255)
     );
     """
 
@@ -51,9 +52,10 @@ def create_tables() -> None:
         title VARCHAR(255) NOT NULL,
         salary_min INTEGER,
         salary_max INTEGER,
+        avg_salary INTEGER,
+        link VARCHAR(255),
         currency VARCHAR(10),
-        published_at TIMESTAMP,
-        employer_id INTEGER REFERENCES employers(id) ON DELETE CASCADE
+        employer_id VARCHAR(255) REFERENCES employers(employer_id) ON DELETE CASCADE
     );
     """
 
@@ -67,8 +69,3 @@ def create_tables() -> None:
     finally:
         cursor.close()
         connection.close()
-
-#
-# if __name__ == "__main__":
-#     create_database()
-#     create_tables()
