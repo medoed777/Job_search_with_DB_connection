@@ -3,25 +3,35 @@ import os
 import psycopg2
 from dotenv import load_dotenv
 from psycopg2 import sql
+from typing import Any, Dict
 
 load_dotenv()
 
 
+def get_db_config() -> Dict[str, Any]:
+    """Берет переменные из .env"""
+    return {
+        'dbname': os.getenv("DATABASE_NAME"),
+        'user': os.getenv("DATABASE_USER"),
+        'password': os.getenv("DATABASE_PASSWORD"),
+        'host': os.getenv("DATABASE_HOST", "localhost"),
+        'port': os.getenv("DATABASE_PORT", "5432")
+    }
+
+
 def create_database() -> None:
     """Функция для создания базы данных"""
-    db_name = os.getenv("DATABASE_NAME")
-    user = os.getenv("DATABASE_USER")
-    password = os.getenv("DATABASE_PASSWORD")
+    config = get_db_config()
 
-    connection = psycopg2.connect(user=user, password=password)
+    connection = psycopg2.connect(**config)
     connection.autocommit = True
     cursor = connection.cursor()
 
     try:
         cursor.execute(
-            sql.SQL("CREATE DATABASE {}").format(sql.Identifier(db_name))
+            sql.SQL("CREATE DATABASE {}").format(sql.Identifier(config['dbname']))
         )
-        print(f"База данных '{db_name}' успешно создана.")
+        print(f"База данных '{config['dbname']}' успешно создана.")
     except Exception as e:
         print(f"Ошибка при создании базы данных: {e}")
     finally:
@@ -31,11 +41,9 @@ def create_database() -> None:
 
 def create_tables() -> None:
     """Функция для создания таблиц"""
-    db_name = os.getenv("DATABASE_NAME")
-    user = os.getenv("DATABASE_USER")
-    password = os.getenv("DATABASE_PASSWORD")
+    config = get_db_config()
 
-    connection = psycopg2.connect(dbname=db_name, user=user, password=password)
+    connection = psycopg2.connect(**config)
     cursor = connection.cursor()
 
     create_employers_table = """

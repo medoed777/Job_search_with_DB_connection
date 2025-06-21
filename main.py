@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 
 from src.db_manager import DBManager
 from src.hh_api import EmployerAPI
-from src.sql_manager import create_database, create_tables
+from src.sql_manager import get_db_config, create_database, create_tables
 
 load_dotenv()
 db_name = os.getenv("DATABASE_NAME")
@@ -29,11 +29,10 @@ employers_ids = [
 def fill_tables(employer_ids: list) -> None:
     """Заполняет таблицы данными о работодателях и их вакансиях"""
     api = EmployerAPI()
+    config = get_db_config()  # Получаем конфигурацию базы данных
 
     try:
-        connection = psycopg2.connect(
-            dbname=db_name, user=user, password=password
-        )
+        connection = psycopg2.connect(**config)
         cursor = connection.cursor()
 
         for employer_id in employer_ids:
